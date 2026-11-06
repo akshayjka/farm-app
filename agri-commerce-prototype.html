@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AgriCommerce Platform — Interactive Prototype</title>
+<style>
+  :root {
+    --primary: #B91C1C;
+    --primary-dark: #991B1B;
+    --primary-light: #FEE2E2;
+    --primary-hover: #DC2626;
+    --bg: #F8FAFC;
+    --card: #FFFFFF;
+    --text: #0F172A;
+    --muted: #64748B;
+    --border: #E2E8F0;
+    --success: #16A34A;
+    --success-bg: #DCFCE7;
+    --warning: #D97706;
+    --warning-bg: #FEF3C7;
+    --info: #2563EB;
+    --info-bg: #DBEAFE;
+    --danger: #DC2626;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: #0F172A;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ========== LANDING ========== */
+  .landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .landing-logo {
+    width: 72px; height: 72px;
+    background: var(--primary);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(185,28,28,0.4);
+  }
+  .landing h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .landing .subtitle {
+    color: #94A3B8;
+    font-size: 1.15rem;
+    margin-bottom: 48px;
+    max-width: 520px;
+  }
+  .landing-cards {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .landing-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 36px 32px;
+    width: 280px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+    text-align: left;
+  }
+  .landing-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-color: var(--primary);
+  }
+  .landing-card .icon {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin-bottom: 18px;
+  }
+  .landing-card.customer .icon { background: var(--primary-light); }
+  .landing-card.admin .icon { background: #FEE2E2; }
+  .landing-card h3 { font-size: 1.25rem; margin-bottom: 8px; color: var(--text); }
+  .landing-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+  .landing-card .badge {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ========== APP SHELL ========== */
+  .app-shell { display: none; min-height: 100vh; }
+  .app-shell.active { display: flex; flex-direction: column; }
+
+  /* Top bar for mode switch */
+  .mode-bar {
+    background: #0F172A;
+    color: white;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #1E293B;
+  }
+  .mode-bar .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600;
+  }
+  .mode-bar .brand span {
+    width: 28px; height: 28px;
+    background: var(--primary);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .mode-switch {
+    display: flex; gap: 8px;
+  }
+  .mode-switch button {
+    background: transparent;
+    border: 1px solid #334155;
+    color: #94A3B8;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .mode-switch button.active, .mode-switch button:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+  .back-landing {
+    background: transparent;
+    border: none;
+    color: #94A3B8;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .back-landing:hover { color: white; }
+
+  /* ========== CUSTOMER MOBILE FRAME ========== */
+  .customer-view {
+    flex: 1;
+    display: none;
+    background: #1E293B;
+    padding: 24px;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: auto;
+  }
+  .customer-view.active { display: flex; }
+
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    background: var(--bg);
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    border: 8px solid #0F172A;
+    position: relative;
+    min-height: 780px;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-notch {
+    height: 28px;
+    background: #0F172A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .phone-notch::after {
+    content: '';
+    width: 120px; height: 18px;
+    background: #0F172A;
+    border-radius: 0 0 14px 14px;
+  }
+  .phone-content {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg);
+    position: relative;
+  }
+  .phone-nav {
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 16px;
+  }
+  .phone-nav button {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px 12px;
+  }
+  .phone-nav button.active { color: var(--primary); font-weight: 600; }
+  .phone-nav button span { font-size: 1.3rem; }
+
+  /* Customer screens */
+  .c-screen { display: none; padding: 16px; min-height: 100%; }
+  .c-screen.active { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .c-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .c-header h2 { font-size: 1.25rem; font-weight: 700; }
+  .c-header .back-btn {
+    background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text);
+    padding: 4px;
+  }
+  .c-search {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    align-items: center;
+    gap: 10px;
+  }
+  .c-search input {
+    border: none; outline: none; flex: 1; font-size: 0.95rem; background: transparent;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .cat-item {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .cat-item:hover, .cat-item.active { border-color: var(--primary); }
+  .cat-item .emoji { font-size: 1.6rem; margin-bottom: 4px; }
+  .cat-item span { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title a { font-size: 0.8rem; color: var(--primary); font-weight: 500; text-decoration: none; }
+
+  .product-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+  }
+  .product-card {
+    min-width: 150px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+  .product-card:hover { box-shadow: var(--shadow-md); }
+  .product-card .img {
+    height: 110px;
+    background: linear-gradient(135deg, #FEE2E2, #FECACA);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+  }
+  .product-card .info { padding: 10px; }
+  .product-card .name { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+  .product-card .price { color: var(--primary); font-weight: 700; font-size: 0.95rem; }
+  .product-card .unit { font-size: 0.7rem; color: var(--muted); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
+
+  /* Product Detail */
+  .pd-img {
+    height: 220px;
+    background: linear-gradient(135deg, #FEE2E2, #FECACA);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+    margin-bottom: 16px;
+  }
+  .pd-price { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin: 8px 0; }
+  .pd-meta { display: flex; gap: 16px; margin: 12px 0; font-size: 0.85rem; color: var(--muted); }
+  .pd-meta span { display: flex; align-items: center; gap: 4px; }
+  .qty-selector {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    width: fit-content;
+  }
+  .qty-selector button {
+    width: 32px; height: 32px;
+    border: none; background: var(--primary-light); color: var(--primary);
+    border-radius: 8px; font-size: 1.1rem; cursor: pointer; font-weight: 700;
+  }
+
+  /* Cart */
+  .cart-item {
+    display: flex; gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .cart-item .img {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #FEE2E2, #FECACA);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; flex-shrink: 0;
+  }
+  .cart-item .details { flex: 1; }
+  .cart-item .name { font-weight: 600; font-size: 0.9rem; }
+  .cart-item .price { color: var(--primary); font-weight: 700; margin-top: 4px; }
+
+  .summary-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .summary-row {
+    display: flex; justify-content: space-between;
+    margin-bottom: 8px; font-size: 0.9rem;
+  }
+  .summary-row.total {
+    font-weight: 700; font-size: 1.1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 10px; margin-top: 8px; margin-bottom: 0;
+  }
+
+  /* Status timeline */
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+    margin: 20px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 4px; bottom: 4px;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px; top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--card);
+  }
+  .timeline-item.done::before { background: var(--success); }
+  .timeline-item.current::before { background: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+  .timeline-item .label { font-weight: 600; font-size: 0.9rem; }
+  .timeline-item .time { font-size: 0.75rem; color: var(--muted); }
+
+  /* Status badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .badge-success { background: var(--success-bg); color: var(--success); }
+  .badge-warning { background: var(--warning-bg); color: var(--warning); }
+  .badge-info { background: var(--info-bg); color: var(--info); }
+  .badge-danger { background: var(--primary-light); color: var(--primary); }
+  .badge-muted { background: #F1F5F9; color: var(--muted); }
+
+  /* Auth forms */
+  .auth-logo {
+    text-align: center;
+    margin: 32px 0 24px;
+  }
+  .auth-logo .icon {
+    width: 64px; height: 64px;
+    background: var(--primary);
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  .auth-logo h1 { font-size: 1.5rem; }
+  .auth-logo p { color: var(--muted); font-size: 0.9rem; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    margin-bottom: 6px; color: var(--muted);
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    background: var(--card);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--primary);
+  }
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+
+  /* ========== ADMIN VIEW ========== */
+  .admin-view {
+    flex: 1;
+    display: none;
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .admin-view.active { display: flex; }
+
+  .admin-sidebar {
+    width: 240px;
+    background: #0F172A;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .admin-sidebar .logo {
+    padding: 20px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #1E293B;
+  }
+  .admin-sidebar .logo span {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .admin-sidebar .logo strong { font-size: 1.05rem; }
+  .admin-sidebar nav { flex: 1; padding: 12px 0; }
+  .admin-sidebar nav button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #94A3B8;
+    padding: 11px 20px;
+    text-align: left;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: all 0.15s;
+  }
+  .admin-sidebar nav button:hover { background: #1E293B; color: white; }
+  .admin-sidebar nav button.active {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+  }
+  .admin-sidebar .user {
+    padding: 16px 20px;
+    border-top: 1px solid #1E293B;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.85rem;
+  }
+  .admin-sidebar .user .avatar {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  .admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .admin-topbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .admin-topbar h2 { font-size: 1.15rem; font-weight: 700; }
+  .admin-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .kpi-card .label { font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+  .kpi-card .value { font-size: 1.75rem; font-weight: 700; }
+  .kpi-card .trend {
+    font-size: 0.75rem;
+    margin-top: 6px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .kpi-card .trend.up { color: var(--success); }
+  .kpi-card .trend.down { color: var(--danger); }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .panel-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-header h3 { font-size: 1rem; font-weight: 700; }
+  .panel-body { padding: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    background: #F8FAFC;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #F8FAFC; }
+
+  .a-screen { display: none; }
+  .a-screen.active { display: block; animation: fadeIn 0.2s ease; }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-pill::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .action-btns { display: flex; gap: 8px; }
+  .action-btns button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .action-btns button:hover { border-color: var(--primary); color: var(--primary); }
+  .action-btns button.primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .action-btns button.primary:hover { background: var(--primary-dark); }
+
+  /* Order detail */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+  .info-list { list-style: none; }
+  .info-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .info-list li:last-child { border-bottom: none; }
+  .info-list .label { color: var(--muted); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: #0F172A;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    animation: slideUp 0.3s ease;
+  }
+  .toast.show { display: flex; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+  /* Responsive tweaks */
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .detail-grid { grid-template-columns: 1fr; }
+    .admin-sidebar { width: 200px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== LANDING ========== -->
+<div class="landing" id="landing">
+  <div class="landing-logo">🌾</div>
+  <h1>AgriCommerce</h1>
+  <p class="subtitle">Enterprise Agri-Commerce Platform — Interactive Prototype<br>
+  Customer App + Admin Control Centre</p>
+  <div class="landing-cards">
+    <div class="landing-card customer" onclick="enterMode('customer')">
+      <div class="icon">📱</div>
+      <h3>Customer App</h3>
+      <p>Registration → Browse → Cart → Checkout → Track → Returns & Support</p>
+      <span class="badge">Mobile Experience</span>
+    </div>
+    <div class="landing-card admin" onclick="enterMode('admin')">
+      <div class="icon">🖥️</div>
+      <h3>Admin Portal</h3>
+      <p>Dashboard · Catalogue · Inventory · Orders · Fulfilment · Help Desk</p>
+      <span class="badge">Operations Control</span>
+    </div>
+  </div>
+  <p style="margin-top:48px;color:#64748B;font-size:0.85rem;">Click a card to explore the full flow · Red + White Enterprise Theme</p>
+</div>
+
+<!-- ========== APP SHELL ========== -->
+<div class="app-shell" id="appShell">
+  <div class="mode-bar">
+    <div class="brand">
+      <span>🌾</span> AgriCommerce Prototype
+    </div>
+    <div class="mode-switch">
+      <button id="btnCustomer" class="active" onclick="switchMode('customer')">📱 Customer App</button>
+      <button id="btnAdmin" onclick="switchMode('admin')">🖥️ Admin Portal</button>
+    </div>
+    <button class="back-landing" onclick="goLanding()">← Back to Start</button>
+  </div>
+
+  <!-- CUSTOMER VIEW -->
+  <div class="customer-view active" id="customerView">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-content" id="phoneContent">
+
+        <!-- LOGIN -->
+        <div class="c-screen active" id="c-login">
+          <div class="auth-logo">
+            <div class="icon">🌾</div>
+            <h1>AgriCommerce</h1>
+            <p>Reliable agri inputs, delivered</p>
+          </div>
+          <div class="form-group">
+            <label>Mobile / Email</label>
+            <input type="text" placeholder="+91 98765 43210" value="rajesh.farmer@email.com">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" value="••••••••">
+          </div>
+          <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="showCScreen('c-home')">Sign In</button>
+          <button class="btn btn-outline btn-block" style="margin-top:10px" onclick="showCScreen('c-register')">Create Account</button>
+          <p style="text-align:center;margin-top:20px;font-size:0.8rem;color:var(--muted)">Demo credentials pre-filled · Tap Sign In</p>
+        </div>
+
+        <!-- REGISTER -->
+        <div class="c-screen" id="c-register">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-login')">←</button>
+            <h2>Create Account</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Rajesh Kumar">
+          </div>
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" placeholder="+91 98765 43210">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="rajesh@email.com">
+          </div>
+          <div class="form-group">
+            <label>Customer Type</label>
+            <select>
+              <option>Farmer</option>
+              <option>Dealer / Retailer</option>
+              <option>Business / Institutional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" placeholder="Min 8 characters">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="showToast('OTP sent to mobile'); setTimeout(()=>showCScreen('c-home'),1200)">Register & Verify OTP</button>
+        </div>
+
+        <!-- HOME -->
+        <div class="c-screen" id="c-home">
+          <div class="c-header">
+            <div>
+              <div style="font-size:0.8rem;color:var(--muted)">Good morning,</div>
+              <h2 style="font-size:1.15rem">Rajesh Kumar 👋</h2>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button onclick="showCScreen('c-cart')" style="background:var(--primary-light);border:none;width:40px;height:40px;border-radius:10px;font-size:1.2rem;cursor:pointer;position:relative">
+                🛒<span id="cartBadge" style="position:absolute;top:-4px;right:-4px;background:var(--primary);color:white;font-size:0.65rem;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700">0</span>
+              </button>
+            </div>
+          </div>
+          <div class="c-search">
+            <span>🔍</span>
+            <input type="text" placeholder="Search seeds, fertilisers, tools...">
+          </div>
+          <div class="category-grid">
+            <div class="cat-item" onclick="showCScreen('c-products')"><div class="emoji">🌱</div><span>Seeds</span></div>
+            <div class="cat-item" onclick="showCScreen('c-products')"><div class="emoji">🧪</div><span>Fertilisers</span></div>
+            <div class="cat-item" onclick="showCScreen('c-products')"><div class="emoji">🛡️</div><span>Crop Care</span></div>
+            <div class="cat-item" onclick="showCScreen('c-products')"><div class="emoji">🔧</div><span>Equipment</span></div>
+          </div>
+          <div class="section-title">Featured Products <a href="#" onclick="showCScreen('c-products');return false">See all</a></div>
+          <div class="product-scroll">
+            <div class="product-card" onclick="showCScreen('c-product-detail')">
+              <div class="img">🌾</div>
+              <div class="info">
+                <div class="name">Hybrid Paddy Seeds (IR-64)</div>
+                <div class="price">₹1,850 <span class="unit">/ 10kg</span></div>
+              </div>
+            </div>
+            <div class="product-card" onclick="showCScreen('c-product-detail')">
+              <div class="img">💧</div>
+              <div class="info">
+                <div class="name">NPK 19:19:19 Water Soluble</div>
+                <div class="price">₹980 <span class="unit">/ 5kg</span></div>
+              </div>
+            </div>
+            <div class="product-card" onclick="showCScreen('c-product-detail')">
+              <div class="img">🐛</div>
+              <div class="info">
+                <div class="name">Neem Oil Bio-Pesticide</div>
+                <div class="price">₹420 <span class="unit">/ 1L</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="section-title">Recently Viewed</div>
+          <div class="product-scroll">
+            <div class="product-card" onclick="showCScreen('c-product-detail')">
+              <div class="img">🪴</div>
+              <div class="info">
+                <div class="name">Vermicompost Premium</div>
+                <div class="price">₹350 <span class="unit">/ 25kg</span></div>
+              </div>
+            </div>
+            <div class="product-card" onclick="showCScreen('c-product-detail')">
+              <div class="img">⚙️</div>
+              <div class="info">
+                <div class="name">Knapsack Sprayer 16L</div>
+                <div class="price">₹1,650 <span class="unit">/ unit</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCTS LIST -->
+        <div class="c-screen" id="c-products">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-home')">←</button>
+            <h2>Seeds</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div class="c-search">
+            <span>🔍</span>
+            <input type="text" placeholder="Filter by brand, variety...">
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <span class="badge badge-danger">All</span>
+            <span class="badge badge-muted">Paddy</span>
+            <span class="badge badge-muted">Wheat</span>
+            <span class="badge badge-muted">Cotton</span>
+            <span class="badge badge-muted">In Stock</span>
+          </div>
+          <div class="product-card" style="margin-bottom:12px;display:flex;min-width:auto" onclick="showCScreen('c-product-detail')">
+            <div class="img" style="width:100px;height:100px;font-size:2.2rem;flex-shrink:0">🌾</div>
+            <div class="info" style="flex:1">
+              <div class="name">Hybrid Paddy Seeds (IR-64)</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin:4px 0">Brand: AgriSeed · 10kg bag</div>
+              <div class="price">₹1,850</div>
+              <div style="margin-top:6px"><span class="badge badge-success">In Stock</span></div>
+            </div>
+          </div>
+          <div class="product-card" style="margin-bottom:12px;display:flex;min-width:auto" onclick="showCScreen('c-product-detail')">
+            <div class="img" style="width:100px;height:100px;font-size:2.2rem;flex-shrink:0">🌱</div>
+            <div class="info" style="flex:1">
+              <div class="name">Bt Cotton Seeds (RCH-659)</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin:4px 0">Brand: CropMax · 450g pack</div>
+              <div class="price">₹920</div>
+              <div style="margin-top:6px"><span class="badge badge-success">In Stock</span></div>
+            </div>
+          </div>
+          <div class="product-card" style="margin-bottom:12px;display:flex;min-width:auto" onclick="showCScreen('c-product-detail')">
+            <div class="img" style="width:100px;height:100px;font-size:2.2rem;flex-shrink:0">🌿</div>
+            <div class="info" style="flex:1">
+              <div class="name">Wheat HD-2967 Certified</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin:4px 0">Brand: FarmPure · 40kg</div>
+              <div class="price">₹2,400</div>
+              <div style="margin-top:6px"><span class="badge badge-warning">Low Stock</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT DETAIL -->
+        <div class="c-screen" id="c-product-detail">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-products')">←</button>
+            <h2>Product</h2>
+            <button onclick="showCScreen('c-cart')" style="background:none;border:none;font-size:1.3rem;cursor:pointer">🛒</button>
+          </div>
+          <div class="pd-img">🌾</div>
+          <h2 style="font-size:1.2rem">Hybrid Paddy Seeds (IR-64)</h2>
+          <div class="pd-meta">
+            <span>⭐ 4.6 (128)</span>
+            <span>📦 240 units</span>
+            <span>🚚 2-4 days</span>
+          </div>
+          <div class="pd-price">₹1,850 <span style="font-size:0.9rem;color:var(--muted);font-weight:400">/ 10kg bag</span></div>
+          <p style="font-size:0.9rem;color:var(--muted);line-height:1.5;margin:12px 0">High-yielding hybrid variety suitable for irrigated conditions. Disease resistant. Ideal for Kharif season. Germination ≥ 85%.</p>
+          <div style="display:flex;gap:12px;align-items:center;margin:16px 0">
+            <div class="qty-selector">
+              <button onclick="changeQty(-1)">−</button>
+              <span id="qtyVal" style="font-weight:700;min-width:24px;text-align:center">1</span>
+              <button onclick="changeQty(1)">+</button>
+            </div>
+            <button class="btn btn-primary" style="flex:1" onclick="addToCart()">Add to Cart</button>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:0.85rem">
+            <div style="font-weight:600;margin-bottom:6px">Return Policy</div>
+            <div style="color:var(--muted)">7-day return on unopened packs. Quality issues accepted with photo evidence.</div>
+          </div>
+        </div>
+
+        <!-- CART -->
+        <div class="c-screen" id="c-cart">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-home')">←</button>
+            <h2>Cart (<span id="cartCount">0</span>)</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div id="cartItems">
+            <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+              <div style="font-size:3rem;margin-bottom:12px">🛒</div>
+              <p>Your cart is empty</p>
+              <button class="btn btn-primary" style="margin-top:16px" onclick="showCScreen('c-home')">Browse Products</button>
+            </div>
+          </div>
+          <div id="cartSummary" style="display:none">
+            <div class="summary-box">
+              <div class="summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+              <div class="summary-row"><span>Delivery</span><span>₹80</span></div>
+              <div class="summary-row"><span>Tax (5%)</span><span id="tax">₹0</span></div>
+              <div class="summary-row total"><span>Total</span><span id="total">₹0</span></div>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="showCScreen('c-checkout')">Proceed to Checkout</button>
+          </div>
+        </div>
+
+        <!-- CHECKOUT -->
+        <div class="c-screen" id="c-checkout">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-cart')">←</button>
+            <h2>Checkout</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div class="form-group">
+            <label>Delivery Address</label>
+            <div style="background:var(--card);border:1.5px solid var(--primary);border-radius:10px;padding:12px;font-size:0.9rem">
+              <strong>Rajesh Kumar</strong><br>
+              Survey No. 42, Village Rampur<br>
+              Dist. Nashik, Maharashtra 422001<br>
+              +91 98765 43210
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Delivery Option</label>
+            <select>
+              <option>Standard (2-4 days) — ₹80</option>
+              <option>Express (Next day) — ₹180</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <label style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1.5px solid var(--primary);border-radius:10px;cursor:pointer">
+                <input type="radio" name="pay" checked> UPI (GPay / PhonePe / Paytm)
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;cursor:pointer">
+                <input type="radio" name="pay"> Cards / Net Banking
+              </label>
+            </div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-row total"><span>Amount Payable</span><span id="checkoutTotal">₹0</span></div>
+          </div>
+          <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="showCScreen('c-payment-success')">Pay Securely</button>
+        </div>
+
+        <!-- PAYMENT SUCCESS -->
+        <div class="c-screen" id="c-payment-success">
+          <div style="text-align:center;padding:40px 20px">
+            <div style="width:80px;height:80px;background:var(--success-bg);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:16px">✓</div>
+            <h2 style="color:var(--success);margin-bottom:8px">Payment Successful</h2>
+            <p style="color:var(--muted);font-size:0.95rem;margin-bottom:8px">Order #AGR-2026-0847</p>
+            <p style="font-size:1.3rem;font-weight:700;margin-bottom:24px" id="successAmount">₹0</p>
+            <p style="font-size:0.85rem;color:var(--muted);margin-bottom:24px">Stock reserved · Confirmation sent to your mobile</p>
+            <button class="btn btn-primary btn-block" onclick="showCScreen('c-tracking')">Track Order</button>
+            <button class="btn btn-outline btn-block" style="margin-top:10px" onclick="showCScreen('c-home')">Back to Home</button>
+          </div>
+        </div>
+
+        <!-- ORDER TRACKING -->
+        <div class="c-screen" id="c-tracking">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-home')">←</button>
+            <h2>Order Tracking</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">#AGR-2026-0847</div>
+                <div style="font-size:0.8rem;color:var(--muted)">Placed 6 Nov 2026, 2:14 PM</div>
+              </div>
+              <span class="badge badge-info">Shipped</span>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item done">
+              <div class="label">Order Placed</div>
+              <div class="time">6 Nov · 2:14 PM</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="label">Payment Confirmed</div>
+              <div class="time">6 Nov · 2:15 PM</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="label">Processing</div>
+              <div class="time">6 Nov · 3:40 PM</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="label">Packed</div>
+              <div class="time">6 Nov · 5:10 PM</div>
+            </div>
+            <div class="timeline-item current">
+              <div class="label">Shipped</div>
+              <div class="time">6 Nov · 6:22 PM · Courier: BlueDart · AWB 778921034</div>
+            </div>
+            <div class="timeline-item">
+              <div class="label">Out for Delivery</div>
+              <div class="time">Expected 8 Nov</div>
+            </div>
+            <div class="timeline-item">
+              <div class="label">Delivered</div>
+              <div class="time">—</div>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-block" onclick="showCScreen('c-returns')">Request Return / Raise Issue</button>
+        </div>
+
+        <!-- RETURNS -->
+        <div class="c-screen" id="c-returns">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-tracking')">←</button>
+            <h2>Return Request</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div class="form-group">
+            <label>Select Item</label>
+            <select>
+              <option>Hybrid Paddy Seeds (IR-64) — Qty 1</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Reason</label>
+            <select>
+              <option>Damaged / Defective product</option>
+              <option>Wrong item received</option>
+              <option>Quality not as described</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea rows="3" placeholder="Describe the issue..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Upload Photos</label>
+            <div style="border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;color:var(--muted);font-size:0.9rem">
+              📷 Tap to add photos
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="showToast('Return request submitted · Case #RTN-3921'); setTimeout(()=>showCScreen('c-support'),1000)">Submit Request</button>
+        </div>
+
+        <!-- SUPPORT -->
+        <div class="c-screen" id="c-support">
+          <div class="c-header">
+            <button class="back-btn" onclick="showCScreen('c-home')">←</button>
+            <h2>Help Desk</h2>
+            <div style="width:28px"></div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="font-weight:600;margin-bottom:8px">Active Ticket</div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:0.9rem">#TKT-8842 · Return Request</div>
+                <div style="font-size:0.75rem;color:var(--muted)">Opened 10 min ago</div>
+              </div>
+              <span class="badge badge-warning">In Progress</span>
+            </div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;height:280px;display:flex;flex-direction:column">
+            <div style="flex:1;padding:14px;overflow-y:auto">
+              <div style="background:#F1F5F9;border-radius:12px 12px 12px 4px;padding:10px 14px;margin-bottom:10px;max-width:80%;font-size:0.9rem">
+                Hello! I've received your return request for Hybrid Paddy Seeds. Our team is reviewing the photos.
+              </div>
+              <div style="background:var(--primary);color:white;border-radius:12px 12px 4px 12px;padding:10px 14px;margin-bottom:10px;max-width:80%;margin-left:auto;font-size:0.9rem">
+                Thank you. The bag was torn on arrival.
+              </div>
+              <div style="background:#F1F5F9;border-radius:12px 12px 12px 4px;padding:10px 14px;max-width:80%;font-size:0.9rem">
+                Understood. Pickup is scheduled for tomorrow between 10 AM – 2 PM. You'll receive a refund within 3–5 days after inspection.
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--border);padding:10px;display:flex;gap:8px">
+              <input type="text" placeholder="Type a message..." style="flex:1;border:1px solid var(--border);border-radius:20px;padding:8px 14px;outline:none;font-size:0.9rem">
+              <button style="background:var(--primary);color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer">➤</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <button class="btn btn-outline" style="flex:1">📞 Request Callback</button>
+            <button class="btn btn-outline" style="flex:1">📋 My Tickets</button>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="c-screen" id="c-profile">
+          <div class="c-header">
+            <h2>My Profile</h2>
+          </div>
+          <div style="text-align:center;margin:20px 0">
+            <div style="width:72px;height:72px;background:var(--primary);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1.8rem;color:white;font-weight:700">RK</div>
+            <h3 style="margin-top:10px">Rajesh Kumar</h3>
+            <p style="color:var(--muted);font-size:0.9rem">Farmer · Nashik, MH</p>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;cursor:pointer" onclick="showCScreen('c-tracking')">
+              <span>📦 My Orders</span><span>›</span>
+            </div>
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;cursor:pointer">
+              <span>📍 Saved Addresses</span><span>›</span>
+            </div>
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;cursor:pointer" onclick="showCScreen('c-support')">
+              <span>💬 Support Tickets</span><span>›</span>
+            </div>
+            <div style="padding:14px 16px;display:flex;justify-content:space-between;cursor:pointer">
+              <span>⚙️ Settings</span><span>›</span>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-block" style="margin-top:20px;color:var(--primary);border-color:var(--primary)" onclick="showCScreen('c-login')">Sign Out</button>
+        </div>
+
+      </div>
+      <div class="phone-nav">
+        <button class="active" onclick="showCScreen('c-home')"><span>🏠</span>Home</button>
+        <button onclick="showCScreen('c-products')"><span>🔍</span>Browse</button>
+        <button onclick="showCScreen('c-cart')"><span>🛒</span>Cart</button>
+        <button onclick="showCScreen('c-support')"><span>💬</span>Help</button>
+        <button onclick="showCScreen('c-profile')"><span>👤</span>Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div class="admin-view" id="adminView">
+    <div class="admin-sidebar">
+      <div class="logo">
+        <span>🌾</span>
+        <div>
+          <strong>AgriCommerce</strong>
+          <div style="font-size:0.7rem;color:#94A3B8">Admin Portal</div>
+        </div>
+      </div>
+      <nav>
+        <button class="active" onclick="showAScreen('a-dashboard')">📊 Dashboard</button>
+        <button onclick="showAScreen('a-orders')">📦 Orders</button>
+        <button onclick="showAScreen('a-products')">🏷️ Products</button>
+        <button onclick="showAScreen('a-inventory')">📦 Inventory</button>
+        <button onclick="showAScreen('a-customers')">👥 Customers</button>
+        <button onclick="showAScreen('a-returns')">↩️ Returns</button>
+        <button onclick="showAScreen('a-tickets')">🎫 Help Desk</button>
+      </nav>
+      <div class="user">
+        <div class="avatar">SA</div>
+        <div>
+          <div style="font-weight:600">Super Admin</div>
+          <div style="font-size:0.75rem;color:#94A3B8">ops@agricommerce.in</div>
+        </div>
+      </div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <h2 id="adminTitle">Dashboard</h2>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span style="font-size:0.85rem;color:var(--muted)">6 Nov 2026 · 17:40 IST</span>
+          <button class="btn btn-sm btn-primary" onclick="showToast('Notifications: 3 new orders, 1 low-stock alert')">🔔 4</button>
+        </div>
+      </div>
+      <div class="admin-content">
+
+        <!-- DASHBOARD -->
+        <div class="a-screen active" id="a-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="label">New Orders (Today)</div>
+              <div class="value">47</div>
+              <div class="trend up">↑ 12% vs yesterday</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">Pending Fulfilment</div>
+              <div class="value">23</div>
+              <div class="trend">Requires attention</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">Low Stock Items</div>
+              <div class="value" style="color:var(--warning)">8</div>
+              <div class="trend down">2 critical</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">Open Tickets</div>
+              <div class="value">14</div>
+              <div class="trend">3 urgent</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Recent Orders</h3>
+              <button class="btn btn-sm btn-outline" onclick="showAScreen('a-orders')">View All</button>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>#AGR-0847</strong></td>
+                    <td>Rajesh Kumar</td>
+                    <td>₹1,930</td>
+                    <td><span class="status-pill" style="color:var(--info);background:var(--info-bg)">Shipped</span></td>
+                    <td>2h ago</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="showAScreen('a-order-detail')">View</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#AGR-0846</strong></td>
+                    <td>Priya Agro Dealers</td>
+                    <td>₹12,480</td>
+                    <td><span class="status-pill" style="color:var(--warning);background:var(--warning-bg)">Processing</span></td>
+                    <td>3h ago</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="showAScreen('a-order-detail')">View</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#AGR-0845</strong></td>
+                    <td>Suresh Patil</td>
+                    <td>₹3,210</td>
+                    <td><span class="status-pill" style="color:var(--success);background:var(--success-bg)">Delivered</span></td>
+                    <td>5h ago</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#AGR-0844</strong></td>
+                    <td>GreenField Co-op</td>
+                    <td>₹28,900</td>
+                    <td><span class="status-pill" style="color:var(--primary);background:var(--primary-light)">Pending</span></td>
+                    <td>6h ago</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="showAScreen('a-order-detail')">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="a-screen" id="a-orders">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Order Queue</h3>
+              <div style="display:flex;gap:8px">
+                <select style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);font-size:0.85rem">
+                  <option>All Statuses</option>
+                  <option>Pending</option>
+                  <option>Processing</option>
+                  <option>Shipped</option>
+                </select>
+                <button class="btn btn-sm btn-primary">Export</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Zone</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>#AGR-0847</strong></td>
+                    <td>Rajesh Kumar<br><span style="font-size:0.75rem;color:var(--muted)">Farmer</span></td>
+                    <td>1 item</td>
+                    <td>₹1,930</td>
+                    <td><span class="badge badge-success">Paid</span></td>
+                    <td><span class="status-pill" style="color:var(--info);background:var(--info-bg)">Shipped</span></td>
+                    <td>West</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="showAScreen('a-order-detail')">Manage</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#AGR-0846</strong></td>
+                    <td>Priya Agro Dealers<br><span style="font-size:0.75rem;color:var(--muted)">Dealer</span></td>
+                    <td>4 items</td>
+                    <td>₹12,480</td>
+                    <td><span class="badge badge-success">Paid</span></td>
+                    <td><span class="status-pill" style="color:var(--warning);background:var(--warning-bg)">Processing</span></td>
+                    <td>West</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="showAScreen('a-order-detail')">Fulfil</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#AGR-0844</strong></td>
+                    <td>GreenField Co-op<br><span style="font-size:0.75rem;color:var(--muted)">Business</span></td>
+                    <td>7 items</td>
+                    <td>₹28,900</td>
+                    <td><span class="badge badge-success">Paid</span></td>
+                    <td><span class="status-pill" style="color:var(--primary);background:var(--primary-light)">Pending</span></td>
+                    <td>North</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="showAScreen('a-order-detail')">Review</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#AGR-0843</strong></td>
+                    <td>Anita Sharma<br><span style="font-size:0.75rem;color:var(--muted)">Farmer</span></td>
+                    <td>2 items</td>
+                    <td>₹4,120</td>
+                    <td><span class="badge badge-success">Paid</span></td>
+                    <td><span class="status-pill" style="color:var(--success);background:var(--success-bg)">Delivered</span></td>
+                    <td>Central</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDER DETAIL -->
+        <div class="a-screen" id="a-order-detail">
+          <div style="margin-bottom:16px">
+            <button class="btn btn-sm btn-outline" onclick="showAScreen('a-orders')">← Back to Orders</button>
+          </div>
+          <div class="detail-grid">
+            <div>
+              <div class="panel">
+                <div class="panel-header"><h3>Order #AGR-0846 — Fulfilment</h3></div>
+                <div class="panel-body" style="padding:20px">
+                  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+                    <button class="btn btn-sm btn-primary" onclick="showToast('Status updated to Packed')">Mark Packed</button>
+                    <button class="btn btn-sm btn-outline" onclick="showToast('Courier assigned · Tracking generated')">Assign Courier</button>
+                    <button class="btn btn-sm btn-outline">Print Pick List</button>
+                    <button class="btn btn-sm btn-outline" style="color:var(--primary)">Cancel Order</button>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr><th>SKU</th><th>Product</th><th>Qty</th><th>Price</th><th>Warehouse</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>SEED-IR64-10</td>
+                        <td>Hybrid Paddy Seeds IR-64</td>
+                        <td>4</td>
+                        <td>₹7,400</td>
+                        <td>WH-West-01</td>
+                      </tr>
+                      <tr>
+                        <td>FERT-NPK-5</td>
+                        <td>NPK 19:19:19</td>
+                        <td>6</td>
+                        <td>₹5,880</td>
+                        <td>WH-West-01</td>
+                      </tr>
+                      <tr>
+                        <td>PEST-NEEM-1</td>
+                        <td>Neem Oil Bio-Pesticide</td>
+                        <td>2</td>
+                        <td>₹840</td>
+                        <td>WH-West-02</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="panel">
+                <div class="panel-header"><h3>Customer & Delivery</h3></div>
+                <div class="panel-body" style="padding:16px">
+                  <ul class="info-list">
+                    <li><span class="label">Customer</span><span>Priya Agro Dealers</span></li>
+                    <li><span class="label">Type</span><span>Dealer</span></li>
+                    <li><span class="label">Phone</span><span>+91 98200 11223</span></li>
+                    <li><span class="label">Address</span><span style="text-align:right">12 Market Yard,<br>Pune 411001</span></li>
+                    <li><span class="label">Payment</span><span class="badge badge-success">Paid · UPI</span></li>
+                    <li><span class="label">Status</span><span class="badge badge-warning">Processing</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="panel" style="margin-top:16px">
+                <div class="panel-header"><h3>Internal Notes</h3></div>
+                <div class="panel-body" style="padding:16px">
+                  <textarea style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:0.9rem;min-height:80px" placeholder="Add note for warehouse team..."></textarea>
+                  <button class="btn btn-sm btn-primary" style="margin-top:8px" onclick="showToast('Note saved')">Save Note</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="a-screen" id="a-products">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Product Catalogue</h3>
+              <button class="btn btn-sm btn-primary">+ Add Product</button>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>SKU</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SEED-IR64-10</td>
+                    <td>Hybrid Paddy Seeds (IR-64)</td>
+                    <td>Seeds</td>
+                    <td>₹1,850</td>
+                    <td>240</td>
+                    <td><span class="badge badge-success">Published</span></td>
+                    <td><button class="btn btn-sm btn-outline">Edit</button></td>
+                  </tr>
+                  <tr>
+                    <td>FERT-NPK-5</td>
+                    <td>NPK 19:19:19 Water Soluble</td>
+                    <td>Fertilisers</td>
+                    <td>₹980</td>
+                    <td>86</td>
+                    <td><span class="badge badge-success">Published</span></td>
+                    <td><button class="btn btn-sm btn-outline">Edit</button></td>
+                  </tr>
+                  <tr>
+                    <td>PEST-NEEM-1</td>
+                    <td>Neem Oil Bio-Pesticide</td>
+                    <td>Crop Care</td>
+                    <td>₹420</td>
+                    <td>12</td>
+                    <td><span class="badge badge-warning">Low Stock</span></td>
+                    <td><button class="btn btn-sm btn-outline">Edit</button></td>
+                  </tr>
+                  <tr>
+                    <td>EQP-SPRAY-16</td>
+                    <td>Knapsack Sprayer 16L</td>
+                    <td>Equipment</td>
+                    <td>₹1,650</td>
+                    <td>45</td>
+                    <td><span class="badge badge-success">Published</span></td>
+                    <td><button class="btn btn-sm btn-outline">Edit</button></td>
+                  </tr>
+                  <tr>
+                    <td>SEED-WHT-40</td>
+                    <td>Wheat HD-2967 Certified</td>
+                    <td>Seeds</td>
+                    <td>₹2,400</td>
+                    <td>8</td>
+                    <td><span class="badge badge-danger">Critical</span></td>
+                    <td><button class="btn btn-sm btn-outline">Edit</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- INVENTORY -->
+        <div class="a-screen" id="a-inventory">
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="kpi-card">
+              <div class="label">Total SKUs</div>
+              <div class="value">186</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">Reserved Stock</div>
+              <div class="value">412</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">Reorder Alerts</div>
+              <div class="value" style="color:var(--warning)">8</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Stock Levels by Warehouse</h3>
+              <button class="btn btn-sm btn-outline">Adjust Stock</button>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>SKU</th>
+                    <th>Product</th>
+                    <th>Warehouse</th>
+                    <th>Available</th>
+                    <th>Reserved</th>
+                    <th>Reorder At</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SEED-IR64-10</td>
+                    <td>Hybrid Paddy Seeds</td>
+                    <td>WH-West-01</td>
+                    <td>240</td>
+                    <td>18</td>
+                    <td>50</td>
+                    <td><span class="badge badge-success">Healthy</span></td>
+                  </tr>
+                  <tr>
+                    <td>PEST-NEEM-1</td>
+                    <td>Neem Oil Bio-Pesticide</td>
+                    <td>WH-West-02</td>
+                    <td>12</td>
+                    <td>4</td>
+                    <td>20</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                  </tr>
+                  <tr>
+                    <td>SEED-WHT-40</td>
+                    <td>Wheat HD-2967</td>
+                    <td>WH-North-01</td>
+                    <td>8</td>
+                    <td>2</td>
+                    <td>30</td>
+                    <td><span class="badge badge-danger">Critical</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUSTOMERS -->
+        <div class="a-screen" id="a-customers">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Customer Directory</h3>
+              <input type="text" placeholder="Search name, mobile, ID..." style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;width:220px">
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Orders</th>
+                    <th>Lifetime Spent</th>
+                    <th>Last Active</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Rajesh Kumar</strong><br><span style="font-size:0.75rem;color:var(--muted)">+91 98765 43210</span></td>
+                    <td><span class="badge badge-info">Farmer</span></td>
+                    <td>Nashik, MH</td>
+                    <td>12</td>
+                    <td>₹48,200</td>
+                    <td>Today</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Priya Agro Dealers</strong><br><span style="font-size:0.75rem;color:var(--muted)">+91 98200 11223</span></td>
+                    <td><span class="badge badge-warning">Dealer</span></td>
+                    <td>Pune, MH</td>
+                    <td>47</td>
+                    <td>₹3,12,400</td>
+                    <td>Today</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>GreenField Co-op</strong><br><span style="font-size:0.75rem;color:var(--muted)">+91 97654 32109</span></td>
+                    <td><span class="badge badge-success">Business</span></td>
+                    <td>Indore, MP</td>
+                    <td>28</td>
+                    <td>₹8,90,100</td>
+                    <td>Yesterday</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- RETURNS -->
+        <div class="a-screen" id="a-returns">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Returns & Refunds</h3>
+              <span class="badge badge-warning">3 Pending Review</span>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Case ID</th>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>SLA</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>#RTN-3921</strong></td>
+                    <td>#AGR-0847</td>
+                    <td>Rajesh Kumar</td>
+                    <td>Damaged packaging</td>
+                    <td><span class="badge badge-warning">Pending Review</span></td>
+                    <td>4h left</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="primary" onclick="showToast('Return approved · Pickup scheduled')">Approve</button>
+                        <button>Reject</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>#RTN-3918</strong></td>
+                    <td>#AGR-0821</td>
+                    <td>Anita Sharma</td>
+                    <td>Wrong item</td>
+                    <td><span class="badge badge-info">Pickup Scheduled</span></td>
+                    <td>—</td>
+                    <td><button class="btn btn-sm btn-outline">Track</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#RTN-3912</strong></td>
+                    <td>#AGR-0798</td>
+                    <td>Suresh Patil</td>
+                    <td>Quality issue</td>
+                    <td><span class="badge badge-success">Refunded</span></td>
+                    <td>—</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- HELP DESK -->
+        <div class="a-screen" id="a-tickets">
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="kpi-card">
+              <div class="label">Open Tickets</div>
+              <div class="value">14</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">Avg First Response</div>
+              <div class="value">18m</div>
+            </div>
+            <div class="kpi-card">
+              <div class="label">CSAT (7d)</div>
+              <div class="value">4.6</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Ticket Queue</h3>
+              <div style="display:flex;gap:8px">
+                <select style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);font-size:0.85rem">
+                  <option>All Categories</option>
+                  <option>Order</option>
+                  <option>Delivery</option>
+                  <option>Return/Refund</option>
+                  <option>Payment</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ticket</th>
+                    <th>Customer</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Assigned</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>#TKT-8842</strong></td>
+                    <td>Rajesh Kumar</td>
+                    <td>Return/Refund</td>
+                    <td><span class="badge badge-danger">Urgent</span></td>
+                    <td><span class="badge badge-warning">In Progress</span></td>
+                    <td>Support Agent 2</td>
+                    <td><button class="btn btn-sm btn-primary">Open Chat</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#TKT-8839</strong></td>
+                    <td>Priya Agro</td>
+                    <td>Delivery</td>
+                    <td><span class="badge badge-warning">High</span></td>
+                    <td><span class="badge badge-muted">Unassigned</span></td>
+                    <td>—</td>
+                    <td><button class="btn btn-sm btn-primary">Assign Me</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>#TKT-8831</strong></td>
+                    <td>GreenField Co-op</td>
+                    <td>Order</td>
+                    <td><span class="badge badge-muted">Normal</span></td>
+                    <td><span class="badge badge-info">Waiting Customer</span></td>
+                    <td>Support Agent 1</td>
+                    <td><button class="btn btn-sm btn-outline">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span id="toastMsg">Action completed</span>
+</div>
+
+<script>
+  // Mode switching
+  function enterMode(mode) {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('appShell').classList.add('active');
+    switchMode(mode);
+  }
+  function goLanding() {
+    document.getElementById('appShell').classList.remove('active');
+    document.getElementById('landing').style.display = 'flex';
+  }
+  function switchMode(mode) {
+    document.getElementById('customerView').classList.toggle('active', mode === 'customer');
+    document.getElementById('adminView').classList.toggle('active', mode === 'admin');
+    document.getElementById('btnCustomer').classList.toggle('active', mode === 'customer');
+    document.getElementById('btnAdmin').classList.toggle('active', mode === 'admin');
+  }
+
+  // Customer screens
+  function showCScreen(id) {
+    document.querySelectorAll('.c-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    // Update bottom nav
+    const navMap = {
+      'c-home': 0, 'c-products': 1, 'c-product-detail': 1, 'c-cart': 2,
+      'c-checkout': 2, 'c-payment-success': 2, 'c-tracking': 0,
+      'c-returns': 3, 'c-support': 3, 'c-profile': 4, 'c-login': -1, 'c-register': -1
+    };
+    const idx = navMap[id];
+    document.querySelectorAll('.phone-nav button').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
+    });
+  }
+
+  // Admin screens
+  const adminTitles = {
+    'a-dashboard': 'Dashboard',
+    'a-orders': 'Orders',
+    'a-order-detail': 'Order Detail',
+    'a-products': 'Products',
+    'a-inventory': 'Inventory',
+    'a-customers': 'Customers',
+    'a-returns': 'Returns & Refunds',
+    'a-tickets': 'Help Desk'
+  };
+  function showAScreen(id) {
+    document.querySelectorAll('.a-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('adminTitle').textContent = adminTitles[id] || 'Admin';
+    // Update sidebar
+    document.querySelectorAll('.admin-sidebar nav button').forEach(b => {
+      b.classList.remove('active');
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(id.replace('a-order-detail','a-orders').replace('a-',''))) {
+        // simple match
+      }
+    });
+    // Highlight correct nav
+    const navButtons = document.querySelectorAll('.admin-sidebar nav button');
+    navButtons.forEach(b => b.classList.remove('active'));
+    if (id === 'a-dashboard') navButtons[0].classList.add('active');
+    else if (id.startsWith('a-order')) navButtons[1].classList.add('active');
+    else if (id === 'a-products') navButtons[2].classList.add('active');
+    else if (id === 'a-inventory') navButtons[3].classList.add('active');
+    else if (id === 'a-customers') navButtons[4].classList.add('active');
+    else if (id === 'a-returns') navButtons[5].classList.add('active');
+    else if (id === 'a-tickets') navButtons[6].classList.add('active');
+  }
+
+  // Cart logic
+  let cartQty = 0;
+  let cartPrice = 1850;
+  function changeQty(d) {
+    const el = document.getElementById('qtyVal');
+    let v = parseInt(el.textContent) + d;
+    if (v < 1) v = 1;
+    if (v > 20) v = 20;
+    el.textContent = v;
+  }
+  function addToCart() {
+    const q = parseInt(document.getElementById('qtyVal').textContent);
+    cartQty += q;
+    updateCartUI();
+    showToast(`Added ${q} × Hybrid Paddy Seeds to cart`);
+  }
+  function updateCartUI() {
+    document.getElementById('cartBadge').textContent = cartQty;
+    document.getElementById('cartCount').textContent = cartQty;
+    if (cartQty > 0) {
+      const sub = cartQty * cartPrice;
+      const tax = Math.round(sub * 0.05);
+      const total = sub + 80 + tax;
+      document.getElementById('cartItems').innerHTML = `
+        <div class="cart-item">
+          <div class="img">🌾</div>
+          <div class="details">
+            <div class="name">Hybrid Paddy Seeds (IR-64)</div>
+            <div style="font-size:0.8rem;color:var(--muted)">10kg bag · Qty: ${cartQty}</div>
+            <div class="price">₹${(cartQty * cartPrice).toLocaleString('en-IN')}</div>
+          </div>
+        </div>`;
+      document.getElementById('cartSummary').style.display = 'block';
+      document.getElementById('subtotal').textContent = '₹' + sub.toLocaleString('en-IN');
+      document.getElementById('tax').textContent = '₹' + tax.toLocaleString('en-IN');
+      document.getElementById('total').textContent = '₹' + total.toLocaleString('en-IN');
+      document.getElementById('checkoutTotal').textContent = '₹' + total.toLocaleString('en-IN');
+      document.getElementById('successAmount').textContent = '₹' + total.toLocaleString('en-IN');
+    }
+  }
+
+  // Toast
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
